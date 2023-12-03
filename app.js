@@ -5,12 +5,7 @@ import {
     getAuth,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
-    signOut,
-    onAuthStateChanged,
-    GoogleAuthProvider,
-    signInWithRedirect,
-    signInWithPopup,
-    getRedirectResult
+    GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
 import {
     getFirestore,
@@ -40,6 +35,43 @@ const db = getFirestore(app);
 
 // ... (your imports and firebase initialization)
 
+//         log in  with gogle
+const provider = new GoogleAuthProvider()
+
+  const signInButton = document.getElementById("signInButton");
+  const signOutButton = document.getElementById("signOutButton");
+  
+
+  signOutButton.style.display = "none";
+
+  const userSignIn = async() => {
+    signInWithPopup(auth, provider)
+    .then((result) => {
+        const user = result.user
+        console.log(user);
+    }).catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message
+    })
+  }
+
+  const userSignOut = async() => {
+    signOut(auth).then(() => {
+        alert("You have signed out successfully!");
+    }).catch((error) => {})
+  }
+
+  onAuthStateChanged(auth, (user) => {
+    if(user) {
+      signOutButton.style.display = "block";
+      
+    } else {
+      signOutButton.style.display = "none";
+    }
+  })
+
+  signInButton.addEventListener('click', userSignIn);
+  signOutButton.addEventListener('click', userSignOut);
 
 
 
@@ -298,12 +330,12 @@ if (list) {
             time: currentTime
         });
     }
-    
+
     const delAllTodob = document.querySelector('#delAllTodo')
     delAllTodob.addEventListener('click', () => {
 
-        
-        
+
+
         const swalWithBootstrapButtons = Swal.mixin({
             customClass: {
                 confirmButton: "btn btn-success",
@@ -330,52 +362,51 @@ if (list) {
             } else if (
                 /* Read more about handling dismissals below */
                 result.dismiss === Swal.DismissReason.cancel
-                ) {
-                    swalWithBootstrapButtons.fire({
-                        title: "Cancelled",
-                        text: "Your Todos is safe :)",
-                        icon: "error"
-                        
-                    });
-                    
-                }
-            });
-            
-        })
-        async function delAllTodo() {
-            const todosCollection = collection(db, 'todos');
-            const todosSnapshot = await getDocs(todosCollection);
-            
-            todosSnapshot.forEach(async (doc) => {
-                await deleteDoc(doc.ref);
-            });
+            ) {
+                swalWithBootstrapButtons.fire({
+                    title: "Cancelled",
+                    text: "Your Todos is safe :)",
+                    icon: "error"
 
-            list.innerHTML = "";
-        }
-        
-        window.delAllTodo = delAllTodo;
-        window.editTodo = editTodo;
-        window.delTodo = delTodo;
+                });
+
+            }
+        });
+
+    })
+    async function delAllTodo() {
+        const todosCollection = collection(db, 'todos');
+        const todosSnapshot = await getDocs(todosCollection);
+
+        todosSnapshot.forEach(async (doc) => {
+            await deleteDoc(doc.ref);
+        });
+
+        list.innerHTML = "";
     }
-        
-        
-        
-        // onAuthStateChanged(auth, (user) => {
+
+    window.delAllTodo = delAllTodo;
+    window.editTodo = editTodo;
+    window.delTodo = delTodo;
+}
+
+
+
+// onAuthStateChanged(auth, (user) => {
 //     if (!user) {
-    //         // Redirect to the login page if the user is not signed in
-    //         window.location = 'index.html';
-    //     }
-    // });
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+//         // Redirect to the login page if the user is not signed in
+//         window.location = 'index.html';
+//     }
+// });
+
+
+
+
+
+
+
+
+
+
+
+
